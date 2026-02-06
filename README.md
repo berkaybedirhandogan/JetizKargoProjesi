@@ -324,5 +324,5 @@ Bu proje **Eğitim ve Portfolyo** amaçlı geliştirilmiştir. Tüm hakları sak
 
 ---
 
-*Son Güncelleme: Ocak 2026*
+*Son Güncelleme: Şubat 2026*
 
