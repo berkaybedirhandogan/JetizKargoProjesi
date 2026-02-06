@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Kariyer";
+}
+
+<div class="page-container">
+
+
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h1 style="font-size: 2.25rem; margin-bottom: 0.75rem;">Ekibimize Katılın</h1>
+        <p style="color: var(--text-secondary); font-size: 1rem;">Geleceği birlikte inşa etmek için yetenekli takım arkadaşları arıyoruz.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="card-glass">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                <h3 style="margin: 0; font-size: 1.1rem;">Kıdemli Yazılım Mühendisi</h3>
+                <span class="badge badge-info" style="font-size: 0.7rem;">Tam Zamanlı</span>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 1.25rem; font-size: 0.9rem;">Lojistik platformumuzun backend mimarisini geliştirecek, .NET Core ve Microservices deneyimi olan mühendisler arıyoruz.</p>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap;">
+                <span><i class="bi bi-geo-alt"></i> İstanbul (Hibrit)</span>
+                <span><i class="bi bi-briefcase"></i> Ar-Ge</span>
+            </div>
+            <span class="btn btn-sm btn-outline" style="pointer-events: none; opacity: 0.6;">Başvur</span>
+        </div>
+        
+        <div class="card-glass">
+             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                <h3 style="margin: 0; font-size: 1.1rem;">Operasyon Müdürü</h3>
+                <span class="badge badge-warning" style="font-size: 0.7rem;">Saha</span>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 1.25rem; font-size: 0.9rem;">İstanbul Avrupa Yakası dağıtım operasyonlarını yönetecek, liderlik vasfı yüksek yöneticiler arıyoruz.</p>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap;">
+                <span><i class="bi bi-geo-alt"></i> İstanbul (Saha)</span>
+                <span><i class="bi bi-briefcase"></i> Operasyon</span>
+            </div>
+            <span class="btn btn-sm btn-outline" style="pointer-events: none; opacity: 0.6;">Başvur</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media (max-width: 900px) {
+        .page-container [style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>

@@ -13,11 +13,11 @@ namespace KargoTakibi.Migrations
                 name: "Kullanicilar",
                 columns: table => new
                 {
-                    KullaniciID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AdSoyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Sifre = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    KullaniciID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AdSoyad = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    Sifre = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,20 +28,20 @@ namespace KargoTakibi.Migrations
                 name: "Kargolar",
                 columns: table => new
                 {
-                    KargoID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GondericiAd = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GondericiIl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GondericiIlce = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GondericiAdresi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GondericiTelefonu = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AliciAd = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AliciIl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AliciIlce = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AliciAdresi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AliciTelefonu = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Durum = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    KullaniciID = table.Column<int>(type: "int", nullable: true)
+                    KargoID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    GondericiAd = table.Column<string>(type: "TEXT", nullable: false),
+                    GondericiIl = table.Column<string>(type: "TEXT", nullable: false),
+                    GondericiIlce = table.Column<string>(type: "TEXT", nullable: false),
+                    GondericiAdresi = table.Column<string>(type: "TEXT", nullable: false),
+                    GondericiTelefonu = table.Column<string>(type: "TEXT", nullable: false),
+                    AliciAd = table.Column<string>(type: "TEXT", nullable: false),
+                    AliciIl = table.Column<string>(type: "TEXT", nullable: false),
+                    AliciIlce = table.Column<string>(type: "TEXT", nullable: false),
+                    AliciAdresi = table.Column<string>(type: "TEXT", nullable: false),
+                    AliciTelefonu = table.Column<string>(type: "TEXT", nullable: false),
+                    Durum = table.Column<string>(type: "TEXT", nullable: true),
+                    KullaniciID = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -58,11 +58,11 @@ namespace KargoTakibi.Migrations
                 name: "Hareketler",
                 columns: table => new
                 {
-                    HareketID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    KargoID = table.Column<int>(type: "int", nullable: false),
-                    Tarih = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Durum = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    HareketID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    KargoID = table.Column<int>(type: "INTEGER", nullable: false),
+                    Tarih = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Durum = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

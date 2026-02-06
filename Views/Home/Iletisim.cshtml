@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "İletişim";
+}
+
+<div class="page-container">
+
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+            <h1 style="font-size: 2rem; margin-bottom: 1.25rem;">Bize Ulaşın</h1>
+            <p style="font-size: 1rem; margin-bottom: 2rem; color: var(--text-secondary);">
+                Sorularınız, önerileriniz veya iş birlikleri için ekibimiz 7/24 hizmetinizde.
+            </p>
+
+            <div class="card-glass">
+                <div style="display: flex; gap: 1rem; align-items: start; margin-bottom: 1.25rem;">
+                    <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.35rem; font-size: 1rem;">Genel Merkez</h4>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Levent, Büyükdere Cad. No:193<br>34394 Şişli/İstanbul</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; align-items: start; margin-bottom: 1.25rem;">
+                    <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.35rem; font-size: 1rem;">E-posta</h4>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">info@jetiz.com<br>destek@jetiz.com</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; align-items: start;">
+                    <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;">
+                        <i class="bi bi-telephone-fill"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.35rem; font-size: 1rem;">Telefon</h4>
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">+90 (850) 123 45 67<br>+90 (212) 987 65 43</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-glass">
+            <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem;">Mesaj Gönderin</h3>
+            <form>
+                <div class="form-group">
+                    <label class="form-label">Ad Soyad</label>
+                    <input type="text" class="form-control" placeholder="Adınız Soyadınız" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">E-posta</label>
+                    <input type="email" class="form-control" placeholder="E-posta adresiniz" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Konu</label>
+                     <select class="form-control" disabled>
+                        <option>Genel Sorular</option>
+                        <option>Kargo Durumu</option>
+                        <option>Şikayet/Öneri</option>
+                        <option>İş Başvurusu</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label class="form-label">Mesajınız</label>
+                    <textarea class="form-control" rows="3" placeholder="Size nasıl yardımcı olabiliriz?" disabled style="min-height: 80px;"></textarea>
+                </div>
+                <span class="btn btn-primary w-100" style="pointer-events: none; opacity: 0.6;">GÖNDER</span>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media (max-width: 900px) {
+        .page-container [style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>

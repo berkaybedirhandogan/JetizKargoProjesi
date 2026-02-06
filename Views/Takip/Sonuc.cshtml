@@ -1,0 +1,227 @@
+@model KargoTakibi.Models.Kargo
+
+@{
+    ViewData["Title"] = "Kargo Takip Sonucu";
+}
+
+<div class="form-page-container" style="max-width: 900px;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+
+        <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">
+            <i class="bi bi-search" style="color: var(--primary);"></i> Kargo Takip
+        </h1> 
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">Takip numaranızla gönderi durumunu sorgulayın</p>
+    </div>
+
+    <div class="card-glass" style="margin-bottom: 2rem;">
+        <form asp-controller="Takip" asp-action="Sorgula" method="get">
+            <div style="display: flex; gap: 1rem; align-items: stretch;">
+                <div style="flex: 1;">
+                    <div class="input-wrap">
+                        <input type="text" name="takipNo" class="form-control" placeholder="Takip numaranızı girin..." 
+                               value="@ViewBag.ArananNo" style="padding: 1rem 1.25rem; font-size: 1rem;">
+                        <i class="bi bi-upc-scan" style="font-size: 1.25rem;"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; white-space: nowrap;">
+                    <i class="bi bi-search"></i> Sorgula
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ViewBag.Hata))
+    {
+        <!-- Hata Durumu -->
+        <div class="card-glass" style="text-align: center; padding: 3rem 2rem;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: rgba(225, 29, 72, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-search" style="font-size: 2.5rem; color: var(--danger);"></i>
+            </div>
+            <h3 style="margin-bottom: 0.5rem;">Kargo Bulunamadı</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">@ViewBag.Hata</p>
+            @if (!string.IsNullOrEmpty(ViewBag.ArananNo))
+            {
+                <div style="display: inline-block; padding: 0.75rem 1.5rem; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-md);">
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">Aranan:</span>
+                    <span style="font-weight: 700; color: var(--text-main); margin-left: 0.5rem;">@ViewBag.ArananNo</span>
+                </div>
+            }
+        </div>
+    }
+    else if (Model != null)
+    {
+        <!-- Başarılı Sonuç -->
+        <div class="card-glass" style="border-top: 4px solid var(--primary); margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Takip Numarası</div>
+                    <div style="font-family: monospace; font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: 0.1em;">@Model.TakipNo</div>
+                </div>
+                <div>
+                    @{
+                        var badgeClass = Model.Durum switch {
+                            "Teslim Edildi" => "badge-success",
+                            "Yolda" => "badge-info",
+                            "Dağıtımda" => "badge-info",
+                            "Hazırlanıyor" => "badge-warning",
+                            "İptal Edildi" => "badge-danger",
+                            _ => "badge-neutral"
+                        };
+                    }
+                    <span class="badge @badgeClass" style="font-size: 0.9rem; padding: 0.6rem 1.2rem;">
+                        @(Model.Durum ?? "Beklemede")
+                    </span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 1.5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+                <div>
+                    <div style="font-size: 0.7rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem;">
+                        <i class="bi bi-box-arrow-up"></i> Gönderici
+                    </div>
+                    <div style="font-weight: 700; font-size: 1rem;">@Model.GondericiAd</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">@Model.GondericiIl, @Model.GondericiIlce</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.7rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem;">
+                        <i class="bi bi-box-arrow-in-down"></i> Alıcı
+                    </div>
+                    <div style="font-weight: 700; font-size: 1rem;">@Model.AliciAd</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">@Model.AliciIl, @Model.AliciIlce</div>
+                </div>
+            </div>
+
+            <div style="padding-top: 1.5rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="bi bi-clock-history" style="color: var(--primary);"></i> Hareket Geçmişi
+                </div>
+                
+                @if (Model.Hareketler != null && Model.Hareketler.Any())
+                {
+                    <div style="position: relative; padding-left: 1.5rem; border-left: 2px solid var(--border);">
+                        @foreach (var hareket in Model.Hareketler.OrderByDescending(h => h.Tarih))
+                        {
+                            var isFirst = hareket == Model.Hareketler.OrderByDescending(h => h.Tarih).First();
+                            <div style="position: relative; margin-bottom: 1.25rem;">
+                                <div style="position: absolute; left: -1.85rem; top: 0.15rem; width: 10px; height: 10px; background: @(isFirst ? "var(--primary)" : "var(--bg-body)"); border: 2px solid var(--primary); border-radius: 50%;"></div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);">@hareket.Durum</span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">@hareket.Tarih.ToString("dd MMM yyyy HH:mm")</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 1rem 0;">
+                        <i class="bi bi-info-circle"></i> Henüz hareket kaydı bulunmuyor.
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Rota Haritası -->
+        <div class="card-glass" style="padding: 0; overflow: hidden; height: 350px; position: relative;">
+            <div id="map" style="height: 100%; width: 100%; background: #050505;"></div>
+            <div style="position: absolute; bottom: 15px; left: 15px; right: 15px; z-index: 1000;">
+                <div style="background: rgba(10,10,10,0.9); border: 1px solid var(--border); backdrop-filter: blur(12px); padding: 0.75rem 1rem; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 1.5rem;">
+                        <div>
+                            <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Çıkış</div>
+                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-main);">@Model.GondericiIl</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Varış</div>
+                            <div style="font-weight: 700; font-size: 0.85rem; color: var(--primary);">@Model.AliciIl</div>
+                        </div>
+                    </div>
+                    <span class="badge @badgeClass" style="font-size: 0.7rem;">@(Model.Durum ?? "Beklemede")</span>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model != null)
+{
+    @section Scripts {
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        
+        <script>
+            $(document).ready(function() {
+                const CITY_COORDS = {
+                    "Adana": [37.0017, 35.3289], "Adıyaman": [37.7644, 38.2763], "Afyonkarahisar": [38.7569, 30.5387], "Ağrı": [39.7191, 43.0503], "Amasya": [40.6533, 35.8331], "Ankara": [39.9334, 32.8597], "Antalya": [36.8841, 30.7056], "Artvin": [41.1828, 41.8183], "Aydın": [37.8444, 27.8458], "Balıkesir": [39.6484, 27.8826], "Bilecik": [40.1419, 29.9793], "Bingöl": [38.8847, 40.4939], "Bitlis": [38.4006, 42.1095], "Bolu": [40.735, 31.6061], "Burdur": [37.7203, 30.2908], "Bursa": [40.1826, 29.0659], "Çanakkale": [40.1467, 26.4067], "Çankırı": [40.6013, 33.6134], "Çorum": [40.5489, 34.9533], "Denizli": [37.7765, 29.0864], "Diyarbakır": [37.9144, 40.211], "Edirne": [41.6771, 26.5592], "Elazığ": [38.681, 39.2264], "Erzincan": [39.75, 39.5], "Erzurum": [39.9056, 41.2721], "Eskişehir": [39.7767, 30.5206], "Gaziantep": [37.0662, 37.3833], "Giresun": [40.9128, 38.3895], "Gümüşhane": [40.4608, 39.4814], "Hakkari": [37.5744, 43.7408], "Hatay": [36.2, 36.16], "Isparta": [37.7644, 30.5522], "Mersin": [36.8, 34.6333], "İstanbul": [41.0082, 28.9784], "İzmir": [38.4192, 27.1287], "Kars": [40.6167, 43.1], "Kastamonu": [41.3887, 33.7827], "Kayseri": [38.7312, 35.4787], "Kırklareli": [41.7333, 27.2167], "Kırşehir": [39.1458, 34.1639], "Kocaeli": [40.8533, 29.8815], "Konya": [37.8667, 32.4833], "Kütahya": [39.4167, 29.9833], "Malatya": [38.3552, 38.3095], "Manisa": [38.6191, 27.4289], "Kahramanmaraş": [37.5858, 36.9371], "Mardin": [37.3211, 40.7245], "Muğla": [37.2105, 28.3644], "Muş": [38.7333, 41.5], "Nevşehir": [38.6244, 34.7144], "Niğde": [37.9667, 34.6833], "Ordu": [40.9839, 37.8764], "Rize": [41.0201, 40.5234], "Sakarya": [40.7568, 30.3789], "Samsun": [41.2928, 36.3313], "Siirt": [37.9333, 41.95], "Sinop": [42.0231, 35.1531], "Sivas": [39.7477, 37.0179], "Tekirdağ": [40.9833, 27.5167], "Tokat": [40.3167, 36.55], "Trabzon": [41.0027, 39.7167], "Tunceli": [39.1083, 39.5471], "Şanlıurfa": [37.1591, 38.7969], "Uşak": [38.6823, 29.4082], "Van": [38.4891, 43.38], "Yozgat": [39.8181, 34.8147], "Zonguldak": [41.4506, 31.7908], "Aksaray": [38.3687, 34.037], "Bayburt": [40.2552, 40.2249], "Karaman": [37.1759, 33.2287], "Kırıkkale": [39.8468, 33.5153], "Batman": [37.8812, 41.1351], "Şırnak": [37.5164, 42.4611], "Bartın": [41.6358, 32.3375], "Ardahan": [41.1105, 42.7022], "Iğdır": [39.9167, 44.0333], "Yalova": [40.6551, 29.2769], "Karabük": [41.2061, 32.6204], "Kilis": [36.7184, 37.1212], "Osmaniye": [37.0742, 36.2473], "Düzce": [40.8438, 31.1565]
+                };
+
+                const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([39.0, 35.0], 6);
+                
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(map);
+
+                const gondericiIl = "@Model.GondericiIl";
+                const aliciIl = "@Model.AliciIl";
+                const currentDurum = "@Model.Durum";
+
+                const start = CITY_COORDS[gondericiIl] || [39.93, 32.85];
+                const end = CITY_COORDS[aliciIl] || [41.01, 28.97];
+
+                const pulseIcon = L.divIcon({
+                    className: 'pulse-marker',
+                    html: `<div style="width: 14px; height: 14px; background: var(--primary); border: 2px solid #fff; border-radius: 50%;"></div>`,
+                    iconSize: [14, 14], iconAnchor: [7, 7]
+                });
+
+                const staticIcon = L.divIcon({
+                    className: 'static-marker',
+                    html: `<div style="width: 10px; height: 10px; background: #555; border: 2px solid #aaa; border-radius: 50%;"></div>`,
+                    iconSize: [10, 10], iconAnchor: [5, 5]
+                });
+
+                L.marker(start, {icon: staticIcon}).addTo(map).bindPopup("<b>Çıkış:</b> " + gondericiIl);
+                L.marker(end, {icon: pulseIcon}).addTo(map).bindPopup("<b>Varış:</b> " + aliciIl);
+
+                let progress = 0;
+                switch(currentDurum) {
+                    case "Teslim Edildi": progress = 1.0; break;
+                    case "Dağıtımda": progress = 0.85; break;
+                    case "Yolda": progress = 0.5; break;
+                    case "Aktarma Merkezinde": progress = 0.35; break;
+                    case "İptal Edildi": progress = 0.0; break;
+                    case "Hazırlanıyor":
+                    default: progress = 0.0; break;
+                }
+
+                const lat = start[0] + (end[0] - start[0]) * progress;
+                const lng = start[1] + (end[1] - start[1]) * progress;
+
+                if (currentDurum !== "İptal Edildi") {
+                    const truckIcon = L.divIcon({
+                        className: 'truck-marker',
+                        html: `<div style="width: 30px; height: 30px; background: var(--primary); border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-truck-front-fill" style="color: white; font-size: 14px;"></i></div>`,
+                        iconSize: [30, 30], iconAnchor: [15, 15]
+                    });
+
+                    L.marker([lat, lng], {icon: truckIcon}).addTo(map);
+
+                    if (progress > 0) {
+                        L.polyline([start, [lat, lng]], { color: '#e11d48', weight: 3 }).addTo(map);
+                    }
+                    L.polyline([[lat, lng], end], { color: 'rgba(255,255,255,0.2)', weight: 2, dashArray: '5, 10' }).addTo(map);
+                } else {
+                    const cancelIcon = L.divIcon({
+                        className: 'cancel-marker',
+                        html: `<div style="width: 30px; height: 30px; background: var(--danger); border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-x-lg" style="color: white; font-size: 14px;"></i></div>`,
+                        iconSize: [30, 30], iconAnchor: [15, 15]
+                    });
+                    L.marker(start, {icon: cancelIcon}).addTo(map);
+                    L.polyline([start, end], { color: 'rgba(225, 29, 72, 0.3)', weight: 2, dashArray: '5, 10' }).addTo(map);
+                }
+
+                map.fitBounds(L.latLngBounds(start, end), { padding: [60, 60] });
+            });
+        </script>
+    }
+}

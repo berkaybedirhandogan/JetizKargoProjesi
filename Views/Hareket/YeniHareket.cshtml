@@ -1,171 +1,99 @@
+@model KargoTakibi.Models.Hareket
+
 @{
-    ViewData["Title"] = "Yeni Hareket Ekle";
+    ViewData["Title"] = "Durum Güncelle";
 }
 
-<style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --input-focus: #667eea;
-    }
+<div class="form-page-container" style="max-width: 600px;">
 
-    body {
-        background-color: #f3f4f6;
-    }
 
-    .action-card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-        background: white;
-        overflow: hidden;
-    }
 
-    .card-header-custom {
-        background: var(--primary-gradient);
-        padding: 2.5rem 2rem;
-        color: white;
-        text-align: center;
-        position: relative;
-    }
+    <div class="card-glass" style="border-top: 4px solid var(--primary);">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+            <div style="width: 48px; height: 48px; background: rgba(225, 29, 72, 0.1); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                <i class="bi bi-patch-plus-fill" style="font-size: 1.5rem;"></i>
+            </div>
+            <div>
+                <h2 style="margin: 0; font-size: 1.35rem;">Durum Güncelle</h2>
+                <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Kargo #@ViewBag.KargoID için yeni hareket kaydı</p>
+            </div>
+        </div>
 
-        .card-header-custom::after {
-            content: '';
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 100px;
-            height: 100px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-        }
-
-    .icon-wrapper {
-        width: 70px;
-        height: 70px;
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(5px);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 15px auto;
-        border: 2px solid rgba(255,255,255,0.3);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .form-select-custom {
-        height: 60px;
-        border-radius: 12px;
-        border: 2px solid #e2e8f0;
-        padding-left: 20px;
-        font-size: 1.05rem;
-        font-weight: 500;
-        color: #4a5568;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23667eea' stroke='none' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-        background-size: 16px 12px;
-        transition: all 0.3s ease;
-    }
-
-        .form-select-custom:focus {
-            border-color: var(--input-focus);
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-        }
-
-    .btn-save {
-        background: var(--primary-gradient);
-        border: none;
-        width: 100%;
-        padding: 15px;
-        border-radius: 12px;
-        color: white;
-        font-weight: 600;
-        font-size: 1.1rem;
-        letter-spacing: 0.5px;
-        transition: transform 0.2s, box-shadow 0.2s;
-        margin-top: 10px;
-    }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-
-    .btn-cancel {
-        color: #718096;
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.2s;
-        display: inline-block;
-        margin-top: 20px;
-    }
-
-        .btn-cancel:hover {
-            color: #2d3748;
-        }
-
-    .info-note {
-        background-color: #f0fdf4;
-        border: 1px solid #bbf7d0;
-        color: #166534;
-        font-size: 0.85rem;
-        border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-    }
-</style>
-
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5 col-lg-4">
-
-            <div class="action-card">
-                <div class="card-header-custom">
-                    <div class="icon-wrapper">
-                        <i class="bi bi-broadcast fs-2"></i>
-                    </div>
-                    <h3 class="mb-1 fw-bold">Durum Güncelle</h3>
-                    <p class="mb-0 opacity-75 small">Kargo ID: #@ViewBag.KargoID</p>
+        <form asp-action="YeniHareket" method="post">
+            <input type="hidden" asp-for="KargoID" />
+            
+            <div class="form-group">
+                <label class="form-label">Kargo Durumu Seçin</label>
+                <div class="status-grid">
+                    <label class="status-card">
+                        <input type="radio" asp-for="Durum" value="Hazırlanıyor" />
+                        <div class="status-content">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Hazırlanıyor</span>
+                        </div>
+                    </label>
+                    
+                    <label class="status-card">
+                        <input type="radio" asp-for="Durum" value="Yolda" />
+                        <div class="status-content">
+                            <i class="bi bi-truck"></i>
+                            <span>Yolda</span>
+                        </div>
+                    </label>
+                    
+                    <label class="status-card">
+                        <input type="radio" asp-for="Durum" value="Aktarma Merkezinde" />
+                        <div class="status-content">
+                            <i class="bi bi-building"></i>
+                            <span>Aktarma Merkezi</span>
+                        </div>
+                    </label>
+                    
+                    <label class="status-card">
+                        <input type="radio" asp-for="Durum" value="Dağıtımda" />
+                        <div class="status-content">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>Dağıtımda</span>
+                        </div>
+                    </label>
+                    
+                    <label class="status-card">
+                        <input type="radio" asp-for="Durum" value="Teslim Edildi" />
+                        <div class="status-content">
+                            <i class="bi bi-check-circle"></i>
+                            <span>Teslim Edildi</span>
+                        </div>
+                    </label>
+                    
+                    <label class="status-card">
+                        <input type="radio" asp-for="Durum" value="İptal Edildi" />
+                        <div class="status-content">
+                            <i class="bi bi-x-circle"></i>
+                            <span>İptal Edildi</span>
+                        </div>
+                    </label>
                 </div>
+                <span asp-validation-for="Durum" class="text-danger" style="font-size: 0.8rem; margin-top: 0.4rem; display: block;"></span>
+            </div>
 
-                <div class="card-body p-4">
-
-                    <div class="info-note">
-                        <i class="bi bi-info-circle-fill me-2 fs-5"></i>
-                        <span>Bu işlem kargonun güncel durumunu değiştirecek ve müşteriye yansıyacaktır.</span>
-                    </div>
-
-                    <form asp-action="YeniHareket" method="post">
-                        <input type="hidden" name="kargoId" value="@ViewBag.KargoID" />
-
-                        <div class="mb-4">
-                            <label class="form-label text-muted fw-bold small ms-1">YENİ DURUM SEÇİNİZ</label>
-                            <select name="durum" class="form-select form-select-custom" required>
-                                <option value="" selected disabled>Durum Seçiniz...</option>
-                                <option value="Kabul Edildi">📦 Kabul Edildi</option>
-                                <option value="Yolda">🚚 Yolda</option>
-                                <option value="Dağıtımda">🏍️ Dağıtımda</option>
-                                <option value="Teslim Edildi">✅ Teslim Edildi</option>
-                                <option value="Teslim Edilemedi">❌ Teslim Edilemedi</option>
-                            </select>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-save">
-                                <i class="bi bi-check2-circle me-2"></i>Durumu Güncelle
-                            </button>
-
-                            <a asp-controller="Kargo" asp-action="Index" class="btn-cancel">
-                                Vazgeç ve Geri Dön
-                            </a>
-                        </div>
-                    </form>
-
+            <div class="form-group">
+                <label class="form-label">İşlem Tarihi</label>
+                <div class="input-wrap">
+                    <input asp-for="Tarih" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                    <i class="bi bi-calendar-event"></i>
                 </div>
             </div>
 
-        </div>
+            <div class="form-actions" style="margin-top: 1.5rem;">
+                <a asp-controller="Kargo" asp-action="Detay" asp-route-id="@ViewBag.KargoID" class="btn btn-secondary">Vazgeç</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save-check"></i> Kaydet
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

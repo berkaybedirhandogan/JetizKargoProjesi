@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KargoTakibi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e99dbc9089016d1903fb9d462af9d81df375ae99")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+11653a3687d19c3c6a6ae795c5b847c9f31cd36f")]
 [assembly: System.Reflection.AssemblyProductAttribute("KargoTakibi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KargoTakibi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

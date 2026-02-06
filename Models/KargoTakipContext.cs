@@ -9,9 +9,9 @@ namespace KargoTakibi.Models
         {
         }
 
-        public DbSet<Kullanici> Kullanicilar { get; set; }
-        public DbSet<Kargo> Kargolar { get; set; }
-        public DbSet<Hareket> Hareketler { get; set; }
+        public DbSet<Kullanici> Kullanicilar { get; set; } = null!;
+        public DbSet<Kargo> Kargolar { get; set; } = null!;
+        public DbSet<Hareket> Hareketler { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

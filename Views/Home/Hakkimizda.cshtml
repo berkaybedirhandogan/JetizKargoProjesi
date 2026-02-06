@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Hakkımızda";
+}
+
+<div class="page-container">
+
+
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 2.25rem; margin-bottom: 1rem;">Lojistiğin Geleceğini İnşa Ediyoruz</h1>
+        <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto;">
+            Jetiz, 2026 yılında "Işık Hızında Teslimat" mottosuyla yola çıktı. Geleneksel kargo süreçlerini yapay zeka ve modern teknolojilerle yeniden tanımlıyoruz.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem;">
+        <div class="card-glass text-center">
+            <div style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"><i class="bi bi-rocket-takeoff"></i></div>
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Hız Tutkusu</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Sektörün en hızlı teslimat sürelerini sunmak için sürekli optimize ediyoruz.</p>
+        </div>
+        <div class="card-glass text-center">
+            <div style="font-size: 2rem; color: var(--info); margin-bottom: 1rem;"><i class="bi bi-cpu"></i></div>
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Teknoloji Odaklı</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Tüm operasyonlarımızda AI destekli rota planlama ve canlı takip sistemleri kullanıyoruz.</p>
+        </div>
+        <div class="card-glass text-center">
+            <div style="font-size: 2rem; color: var(--success); margin-bottom: 1rem;"><i class="bi bi-people"></i></div>
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">İnsan Odaklı</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Mutlu çalışanlar ve mutlu müşteriler felsefesiyle hareket ediyoruz.</p>
+        </div>
+    </div>
+
+    <div class="card-glass">
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; align-items: center;">
+            <div>
+                <h2 style="margin-bottom: 1.25rem; font-size: 1.5rem;">Hikayemiz</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.95rem;">Küçük bir garajda başlayan yolculuğumuz, bugün 81 ilde hizmet veren dev bir operasyona dönüştü. Ancak ilk günkü heyecanımızı hiç kaybetmedik.</p>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.95rem;">Amacımız sadece paket taşımak değil; insanlar, şehirler ve hayaller arasında güvenilir köprüler kurmaktır.</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 4rem; font-weight: 900; color: var(--border);">2026</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media (max-width: 900px) {
+        .page-container [style*="grid-template-columns: repeat(3"] {
+            grid-template-columns: 1fr !important;
+        }
+        .page-container [style*="grid-template-columns: 1.5fr"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>

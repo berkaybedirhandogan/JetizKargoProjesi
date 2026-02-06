@@ -1,9 +1,382 @@
+@model IEnumerable<KargoTakibi.Models.Kargo>
+
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = User.Identity?.IsAuthenticated == true ? "Kontrol Paneli" : "Jetiz Lojistik";
 }
 
+@if (User.Identity?.IsAuthenticated == true)
+{
+    var activeCargos = ViewBag.ActiveCargos as List<KargoTakibi.Models.Kargo>;
 
-<div class="text-center">
-    <h2 class="display-6">Uygulama Hakkında</h2>
-    <p>Kargo Takip Otomasyonu, kullanıcıların kargo işlemlerini kolayca takip edebilmeleri ve yönetebilmeleri için geliştirilmiştir.</p>
-</div>
+    <div class="form-page-container" style="max-width: 1400px; padding: 0 1rem;">
+        
+        <!-- Dashboard Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1.5rem;">
+            <div>
+                <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                    <div style="width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary);"></div>
+                    <span style="font-size: 0.75rem; letter-spacing: 0.15em; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Kontrol Merkezi</span>
+                </div>
+                <h1 style="font-size: 3rem; font-weight: 900; margin: 0; line-height: 1; letter-spacing: -0.02em;">@User.Identity.Name</h1>
+                <p style="color: var(--text-secondary); margin-top: 0.75rem; font-size: 1.1rem;">Lojistik operasyonlarınız canlı izleniyor</p>
+            </div>
+            <a asp-controller="Kargo" asp-action="Ekle" class="btn btn-primary" style="padding: 1rem 2rem; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 30px -10px var(--primary);">
+                <i class="bi bi-plus-lg" style="margin-right: 0.5rem;"></i> YENİ GÖNDERİ
+            </a>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            
+            <!-- İstatistik Kartları -->
+            <div class="stats-grid">
+                
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="bi bi-check-lg"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value">@ViewBag.DeliveredCount</div>
+                        <div class="stat-label">TESLİM EDİLDİ</div>
+                    </div>
+                    <div class="stat-bg-icon"><i class="bi bi-check-circle-fill"></i></div>
+                </div>
+
+                <div class="stat-card info">
+                    <div class="stat-icon"><i class="bi bi-truck"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value">@ViewBag.ActiveCount</div>
+                        <div class="stat-label">YOLDA</div>
+                    </div>
+                    <div class="stat-bg-icon"><i class="bi bi-truck-front-fill"></i></div>
+                </div>
+
+                <div class="stat-card primary">
+                    <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value">@ViewBag.TotalCount</div>
+                        <div class="stat-label">TOPLAM</div>
+                    </div>
+                    <div class="stat-bg-icon"><i class="bi bi-archive-fill"></i></div>
+                </div>
+
+            </div>
+
+            <!-- Hızlı Erişim -->
+            <div class="quick-access-card card-glass">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.25rem; letter-spacing: 0.05em; font-weight: 700;">Hızlı Erişim</div>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <a asp-controller="Kargo" asp-action="Index" class="quick-link">
+                        <div class="icon-box"><i class="bi bi-grid-fill"></i></div>
+                        <span>Tüm Gönderiler</span>
+                        <i class="bi bi-arrow-right-short arrow"></i>
+                    </a>
+                    <a asp-controller="Hareket" asp-action="HareketListesi" class="quick-link">
+                         <div class="icon-box"><i class="bi bi-clock-history"></i></div>
+                        <span>Hareket Geçmişi</span>
+                         <i class="bi bi-arrow-right-short arrow"></i>
+                    </a>
+                    <a asp-controller="Hesap" asp-action="Profil" class="quick-link">
+                         <div class="icon-box"><i class="bi bi-person-gear"></i></div>
+                        <span>Hesap Ayarları</span>
+                         <i class="bi bi-arrow-right-short arrow"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Canlı Gönderiler Başlık -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; margin-top: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;">
+            <h2 style="font-size: 1.5rem; display: flex; align-items: center; gap: 0.75rem; margin: 0; font-weight: 800;">
+                <i class="bi bi-activity" style="color: var(--primary);"></i> Canlı Gönderiler
+            </h2>
+            <a asp-controller="Kargo" asp-action="Index" class="view-all-link">
+                Tümünü Gör <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        @if (activeCargos != null && activeCargos.Any())
+        {
+            <div class="active-cargos-grid">
+                @foreach (var item in activeCargos)
+                {
+                    <a asp-controller="Kargo" asp-action="Detay" asp-route-id="@item.KargoID" class="cargo-card card-glass">
+                        <div class="card-header">
+                            <span class="tracking-number">#@(item.TakipNo ?? "YENI")</span>
+                             @{
+                                var badgeClass = item.Durum switch {
+                                    "Teslim Edildi" => "badge-success",
+                                    "Yolda" => "badge-info",
+                                    "Dağıtımda" => "badge-info",
+                                    "Kabul Edildi" => "badge-warning",
+                                    "İptal Edildi" => "badge-danger",
+                                    _ => "badge-neutral"
+                                };
+                            }
+                            <span class="badge @badgeClass">@item.Durum</span>
+                        </div>
+                        
+                        <div class="route-display">
+                            <div class="location-point">
+                                <div class="city">@item.GondericiIl</div>
+                                <div class="label">Çıkış</div>
+                            </div>
+                            <div class="route-line">
+                                <div class="dot start"></div>
+                                <div class="line"></div>
+                                <div class="dot end"></div>
+                                <i class="bi bi-chevron-right icon"></i>
+                            </div>
+                            <div class="location-point right">
+                                <div class="city">@item.AliciIl</div>
+                                <div class="label">Varış</div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="recipient">
+                                <div class="avatar"><i class="bi bi-person-fill"></i></div>
+                                <span>@item.AliciAd</span>
+                            </div>
+                            <div class="action-hint">Detay <i class="bi bi-arrow-right"></i></div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-dashboard-state">
+                <div class="icon-circle">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <h3>Henüz Aktif Gönderi Yok</h3>
+                <p>Şu anda yolda olan bir gönderiniz bulunmuyor. Yeni bir gönderi oluşturarak başlayın.</p>
+                <a asp-controller="Kargo" asp-action="Ekle" class="btn btn-outline" style="min-width: 200px;">
+                    İlk Gönderiyi Oluştur
+                </a>
+            </div>
+        }
+
+    </div>
+
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.75rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-card.success .stat-icon { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .stat-card.info .stat-icon { background: rgba(59, 130, 246, 0.15); color: var(--info); }
+        .stat-card.primary .stat-icon { background: rgba(225, 29, 72, 0.15); color: var(--primary); }
+
+        .stat-value { font-size: 2.25rem; font-weight: 800; line-height: 1; }
+        .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-top: 0.25rem; letter-spacing: 0.05em; }
+
+        .stat-bg-icon {
+            position: absolute;
+            right: -15px;
+            top: -15px;
+            font-size: 6rem;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+        
+        .stat-card.success .stat-bg-icon { color: var(--success); }
+        .stat-card.info .stat-bg-icon { color: var(--info); }
+        .stat-card.primary .stat-bg-icon { color: var(--primary); }
+
+        .quick-access-card { padding: 1.75rem; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+
+        .quick-link {
+            display: flex; align-items: center; gap: 1rem; padding: 1rem;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px; color: var(--text-secondary); text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .quick-link:hover {
+            background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-main); transform: translateX(5px);
+        }
+
+        .quick-link .icon-box {
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); transition: color 0.2s;
+        }
+        
+        .quick-link:hover .icon-box { color: var(--primary); }
+        .quick-link .arrow { margin-left: auto; opacity: 0.5; font-size: 1.2rem; }
+
+        .view-all-link {
+            color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 0.5rem; transition: gap 0.2s;
+        }
+        
+        .view-all-link:hover { gap: 0.75rem; }
+
+        .active-cargos-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;
+        }
+
+        .cargo-card {
+            display: block; text-decoration: none; color: inherit; padding: 0 !important; overflow: hidden;
+            transition: all 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cargo-card:hover { transform: translateY(-5px); border-color: rgba(225, 29, 72, 0.3); }
+
+        .cargo-card .card-header {
+            padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .tracking-number { font-family: monospace; font-weight: 700; color: var(--info); font-size: 1.1rem; letter-spacing: 0.05em; }
+
+        .route-display { padding: 1.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+        
+        .location-point .city { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.25rem; }
+        .location-point .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .location-point.right { text-align: right; }
+
+        .route-line { flex: 1; margin: 0 1.5rem; position: relative; display: flex; align-items: center; justify-content: center; opacity: 0.5; }
+        .route-line .line { height: 2px; width: 100%; background: var(--border); border-radius: 2px; }
+        .route-line .icon { position: absolute; background: #050505; padding: 0 0.5rem; color: var(--text-muted); }
+
+        .cargo-card .card-footer {
+            padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .recipient { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; color: var(--text-secondary); }
+        .recipient .avatar { width: 24px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+        
+        .action-hint { font-size: 0.8rem; color: var(--primary); font-weight: 600; opacity: 0; transform: translateX(-10px); transition: all 0.3s; }
+        .cargo-card:hover .action-hint { opacity: 1; transform: translateX(0); }
+
+        .empty-dashboard-state {
+            text-align: center; padding: 4rem 2rem; background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px; border: 2px dashed rgba(255, 255, 255, 0.05);
+        }
+
+        .icon-circle {
+            width: 80px; height: 80px; background: rgba(255, 255, 255, 0.03); border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem;
+            color: var(--text-muted); margin-bottom: 1.5rem;
+        }
+
+        @@media (max-width: 1100px) {
+            .dashboard-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .active-cargos-grid { grid-template-columns: 1fr; }
+        }
+
+        @@media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+}
+else
+{
+    @* MEVCUT LANDING PAGE *@
+    <div class="row align-center py-5" style="min-height: 85vh;">
+        <div class="col-lg-6 col-md-12 mb-5" style="padding-right: 3rem;">
+            <div class="badge badge-neutral mb-4" style="border: 1px solid var(--primary); color: var(--primary); background: rgba(225, 29, 72, 0.05); padding: 0.5rem 1rem; width: fit-content; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="bi bi-lightning-charge-fill"></i> JETİZ İLE IŞIK HIZI
+            </div>
+            <h1 style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 1.5rem;">
+                Lojistikte <br />
+                <span class="text-gradient">Yeni Standart</span>
+            </h1>
+            <p style="font-size: 1.15rem; color: var(--text-secondary); line-height: 1.8;">
+                Kargonuzun nerede olduğunu anlık takip edin. Jetiz ile teslimat süreçlerinizi kontrol altına alın.
+            </p>
+
+            <div class="track-widget card-glass" style="margin-top: 2.5rem;">
+                <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="bi bi-search" style="color: var(--primary);"></i> Hızlı Takip
+                </h3>
+                <form asp-controller="Takip" asp-action="Sorgula" method="get" class="d-flex gap-3">
+                    <input type="text" name="takipNo" class="form-control" placeholder="Takip numaranızı girin...">
+                    <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+                        <i class="bi bi-arrow-right"></i> Sorgula
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-6 d-none d-lg-block">
+            <div style="position: relative; display: flex; justify-content: center; align-items: center; height: 100%;">
+                <div style="width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(225, 29, 72, 0.15) 0%, transparent 70%); display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-truck-front-fill" style="font-size: 8rem; color: var(--primary); opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="feature-cards-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem;">
+        <div class="card-glass text-center" style="padding: 2rem 1.5rem;">
+            <i class="bi bi-lightning-charge-fill" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; display: block;"></i>
+            <h4 style="margin-bottom: 0.75rem;">Hızlı Teslimat</h4>
+            <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">Türkiye genelinde en hızlı teslimat ağıyla gönderilerinizi zamanında ulaştırıyoruz.</p>
+        </div>
+        <div class="card-glass text-center" style="padding: 2rem 1.5rem;">
+            <i class="bi bi-shield-check" style="font-size: 2.5rem; color: var(--success); margin-bottom: 1rem; display: block;"></i>
+            <h4 style="margin-bottom: 0.75rem;">Güvenli Taşıma</h4>
+            <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">Özel paketleme ve sigorta seçenekleriyle kargolarınız her zaman güvende.</p>
+        </div>
+        <div class="card-glass text-center" style="padding: 2rem 1.5rem;">
+            <i class="bi bi-geo-alt-fill" style="font-size: 2.5rem; color: var(--info); margin-bottom: 1rem; display: block;"></i>
+            <h4 style="margin-bottom: 0.75rem;">Canlı Takip</h4>
+            <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">Gelişmiş harita altyapımızla gönderinizi saniye saniye izleyin.</p>
+        </div>
+    </div>
+
+    <style>
+        @@media (max-width: 900px) {
+            .feature-cards-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        @@media (min-width: 601px) and (max-width: 900px) {
+            .feature-cards-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+    </style>
+}

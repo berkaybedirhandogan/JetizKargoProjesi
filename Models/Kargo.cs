@@ -8,45 +8,49 @@ namespace KargoTakibi.Models
         [Key]
         public int KargoID { get; set; }
 
+        public string? TakipNo { get; set; }
+
         [Required(ErrorMessage = "Gönderici adı zorunludur")]
         [Display(Name = "Gönderici Adı")]
-        public string GondericiAd { get; set; }
+        public string? GondericiAd { get; set; }
 
         [Required(ErrorMessage = "Gönderici ili zorunludur")]
         [Display(Name = "Gönderici İli")]
-        public string GondericiIl { get; set; }
+        public string? GondericiIl { get; set; }
 
         [Required(ErrorMessage = "Gönderici ilçesi zorunludur")]
         [Display(Name = "Gönderici İlçesi")]
-        public string GondericiIlce { get; set; }
+        public string? GondericiIlce { get; set; }
 
         [Required(ErrorMessage = "Gönderici adresi zorunludur")]
         [Display(Name = "Gönderici Adresi")]
-        public string GondericiAdresi { get; set; }
+        public string? GondericiAdresi { get; set; }
 
         [Required(ErrorMessage = "Gönderici telefonu zorunludur")]
         [Display(Name = "Gönderici Telefonu")]
-        public string GondericiTelefonu { get; set; }
+        [RegularExpression(@"^0\s\(?\d{3}\)?\s\d{3}\s\d{2}\s\d{2}$", ErrorMessage = "Telefon formatı geçersiz: 0 (5XX) XXX XX XX")]
+        public string? GondericiTelefonu { get; set; }
 
         [Required(ErrorMessage = "Alıcı adı zorunludur")]
         [Display(Name = "Alıcı Adı")]
-        public string AliciAd { get; set; }
+        public string? AliciAd { get; set; }
 
         [Required(ErrorMessage = "Alıcı ili zorunludur")]
         [Display(Name = "Alıcı İli")]
-        public string AliciIl { get; set; }
+        public string? AliciIl { get; set; }
 
         [Required(ErrorMessage = "Alıcı ilçesi zorunludur")]
         [Display(Name = "Alıcı İlçesi")]
-        public string AliciIlce { get; set; }
+        public string? AliciIlce { get; set; }
 
         [Required(ErrorMessage = "Alıcı adresi zorunludur")]
         [Display(Name = "Alıcı Adresi")]
-        public string AliciAdresi { get; set; }
+        public string? AliciAdresi { get; set; }
 
         [Required(ErrorMessage = "Alıcı telefonu zorunludur")]
         [Display(Name = "Alıcı Telefonu")]
-        public string AliciTelefonu { get; set; }
+        [RegularExpression(@"^0\s\(?\d{3}\)?\s\d{3}\s\d{2}\s\d{2}$", ErrorMessage = "Telefon formatı geçersiz: 0 (5XX) XXX XX XX")]
+        public string? AliciTelefonu { get; set; }
 
         [Display(Name = "Durum")]
         public string? Durum { get; set; }

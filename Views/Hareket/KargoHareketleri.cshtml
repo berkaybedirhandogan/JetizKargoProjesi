@@ -1,262 +1,257 @@
-@model IEnumerable<KargoTakibi.Models.Hareket>
+@model KargoTakibi.Models.Kargo
 
 @{
-    ViewData["Title"] = "Kargo Hareketleri";
-    var kargoId = Model.FirstOrDefault()?.KargoID;
+    ViewData["Title"] = "Gönderi Takibi";
 }
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<div class="form-page-container" style="max-width: 1200px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; margin: 0;">Canlı Gönderi Takibi</h1>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Takip Numarası</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary);">#@(Model.TakipNo ?? "BEKLEMEDE")</div>
+            <button onclick="showQR()" class="btn btn-sm btn-outline" style="margin-top: 0.35rem; font-size: 0.7rem;">
+                <i class="bi bi-qr-code"></i> QR PAYLAŞ
+            </button>
+        </div>
+    </div>
+
+    <div id="qrModal" style="display: none; position: fixed; inset: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="max-width: 280px; text-align: center; position: relative; padding: 1.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;">
+            <button onclick="$('#qrModal').hide()" style="position: absolute; top: 0.75rem; right: 0.75rem; background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-x-lg"></i></button>
+            <h3 class="mb-3" style="font-size: 1.1rem;">Kargo Takip QR</h3>
+            <img id="qrImage" src="" style="width: 180px; height: 180px; border-radius: 8px; margin-bottom: 0.75rem;" />
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0;">Bu kodu okutarak kargo durumunu anlık takip edebilirsiniz.</p>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+        <div class="card-glass p-0" style="overflow: hidden; height: 500px; position: relative;">
+            <div id="map" style="height: 100%; width: 100%; background: #050505;"></div>
+            
+            <div style="position: absolute; bottom: 15px; left: 15px; right: 15px; z-index: 1000;">
+                <div style="background: rgba(10,10,10,0.85); border: 1px solid var(--border); backdrop-filter: blur(12px); padding: 1rem 1.25rem; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 2rem;">
+                        <div>
+                            <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.2rem;">Mevcut Bölge</div>
+                            <div id="current-loc" style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Hesaplanıyor...</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.2rem;">Mesafe</div>
+                            <div id="distance-text" style="font-weight: 700; font-size: 0.9rem; color: var(--primary);">-- km</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="badge badge-info" style="animation: pulse 2s infinite; font-size: 0.7rem;">
+                            <i class="bi bi-broadcast"></i> Canlı
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-glass" style="display: flex; flex-direction: column; height: 500px;">
+            <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem; font-size: 1.1rem;">
+                <i class="bi bi-journal-text" style="color: var(--primary);"></i> Hareket Günlüğü
+            </h3>
+            
+            <div style="flex: 1; overflow-y: auto; padding-right: 0.5rem;" class="custom-scrollbar">
+                @if (Model.Hareketler != null && Model.Hareketler.Any())
+                {
+                    <div class="timeline" style="border-left: 2px solid var(--border); padding-left: 1.25rem; margin-left: 0.4rem;">
+                        @foreach (var hareket in Model.Hareketler.OrderByDescending(h => h.Tarih))
+                        {
+                            <div style="position: relative; margin-bottom: 1.75rem;">
+                                <div style="position: absolute; left: -1.65rem; top: 0.2rem; width: 10px; height: 10px; background: @(hareket == Model.Hareketler.OrderByDescending(h => h.Tarih).First() ? "var(--primary)" : "var(--bg-body)"); border: 2px solid var(--primary); border-radius: 50%;"></div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                                    <div style="font-weight: 700; color: var(--text-main); font-size: 0.85rem;">@hareket.Durum</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-muted);">@hareket.Tarih.ToString("HH:mm")</div>
+                                </div>
+                                <p style="font-size: 0.8rem; margin: 0; color: var(--text-secondary);">@hareket.Tarih.ToString("dd MMMM yyyy")</p>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div style="text-align: center; padding: 2.5rem 1rem;">
+                        <i class="bi bi-clock-history" style="font-size: 2.5rem; color: var(--border); display: block; margin-bottom: 1rem;"></i>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Henüz bir hareket kaydı bulunmuyor.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --timeline-line: #e2e8f0;
-        --timeline-dot: #cbd5e0;
-        --timeline-active: #667eea;
+    @@keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
     }
-
-    body {
-        background-color: #f3f4f6;
-    }
-
-    .main-card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        background: white;
-        overflow: hidden;
-    }
-
-    .card-header-custom {
-        background: var(--primary-gradient);
-        padding: 2rem;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .status-badge {
-        padding: 5px 15px;
-        border-radius: 50px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .status-hazirlaniyor {
-        background: #e0e7ff;
-        color: #4338ca;
-    }
-
-    .status-yolda {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .status-teslim {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .status-hata {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-
-    #kargoHarita {
-        height: 250px;
-        width: 100%;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        border: 1px solid #edf2f7;
-    }
-
-    .timeline-container {
-        padding: 20px 20px 20px 40px;
-        position: relative;
-    }
-
-        .timeline-container::before {
-            content: '';
-            position: absolute;
-            left: 29px;
-            top: 30px;
-            bottom: 50px;
-            width: 2px;
-            background: var(--timeline-line);
-        }
-
-    .timeline-item {
-        position: relative;
-        margin-bottom: 2.5rem;
-    }
-
-    .timeline-dot {
-        position: absolute;
-        left: -41px;
-        top: 5px;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: white;
-        border: 4px solid var(--timeline-dot);
-        z-index: 2;
-    }
-
-    .timeline-item:first-child .timeline-dot {
-        border-color: var(--timeline-active);
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
-    }
-
-    .timeline-content {
-        background: #f8fafc;
-        padding: 1.2rem;
-        border-radius: 15px;
-        border: 1px solid #edf2f7;
-    }
-
-    .qr-box {
-        text-align: center;
-        background: #f8fafc;
-        padding: 1rem;
-        border-radius: 15px;
-        border: 1px dashed #cbd5e0;
-    }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 </style>
 
-<div class="container py-5">
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="main-card">
-                <div class="card-header-custom">
-                    <div>
-                        <h3 class="mb-1 fw-bold"><i class="bi bi-activity me-2"></i>Hareket Geçmişi</h3>
-                        <p class="mb-0 opacity-75 small">Takip No: #@kargoId</p>
-                    </div>
-                    <a asp-controller="Kargo" asp-action="Index" class="btn btn-light btn-sm rounded-pill px-3">
-                        <i class="bi bi-arrow-left"></i> Geri
-                    </a>
-                </div>
+@section Scripts {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            const CITY_COORDS = {
+                "Adana": [37.0017, 35.3289], "Adıyaman": [37.7644, 38.2763], "Afyonkarahisar": [38.7569, 30.5387], "Ağrı": [39.7191, 43.0503], "Amasya": [40.6533, 35.8331], "Ankara": [39.9334, 32.8597], "Antalya": [36.8841, 30.7056], "Artvin": [41.1828, 41.8183], "Aydın": [37.8444, 27.8458], "Balıkesir": [39.6484, 27.8826], "Bilecik": [40.1419, 29.9793], "Bingöl": [38.8847, 40.4939], "Bitlis": [38.4006, 42.1095], "Bolu": [40.735, 31.6061], "Burdur": [37.7203, 30.2908], "Bursa": [40.1826, 29.0659], "Çanakkale": [40.1467, 26.4067], "Çankırı": [40.6013, 33.6134], "Çorum": [40.5489, 34.9533], "Denizli": [37.7765, 29.0864], "Diyarbakır": [37.9144, 40.211], "Edirne": [41.6771, 26.5592], "Elazığ": [38.681, 39.2264], "Erzincan": [39.75, 39.5], "Erzurum": [39.9056, 41.2721], "Eskişehir": [39.7767, 30.5206], "Gaziantep": [37.0662, 37.3833], "Giresun": [40.9128, 38.3895], "Gümüşhane": [40.4608, 39.4814], "Hakkari": [37.5744, 43.7408], "Hatay": [36.2, 36.16], "Isparta": [37.7644, 30.5522], "Mersin": [36.8, 34.6333], "İstanbul": [41.0082, 28.9784], "İzmir": [38.4192, 27.1287], "Kars": [40.6167, 43.1], "Kastamonu": [41.3887, 33.7827], "Kayseri": [38.7312, 35.4787], "Kırklareli": [41.7333, 27.2167], "Kırşehir": [39.1458, 34.1639], "Kocaeli": [40.8533, 29.8815], "Konya": [37.8667, 32.4833], "Kütahya": [39.4167, 29.9833], "Malatya": [38.3552, 38.3095], "Manisa": [38.6191, 27.4289], "Kahramanmaraş": [37.5858, 36.9371], "Mardin": [37.3211, 40.7245], "Muğla": [37.2105, 28.3644], "Muş": [38.7333, 41.5], "Nevşehir": [38.6244, 34.7144], "Niğde": [37.9667, 34.6833], "Ordu": [40.9839, 37.8764], "Rize": [41.0201, 40.5234], "Sakarya": [40.7568, 30.3789], "Samsun": [41.2928, 36.3313], "Siirt": [37.9333, 41.95], "Sinop": [42.0231, 35.1531], "Sivas": [39.7477, 37.0179], "Tekirdağ": [40.9833, 27.5167], "Tokat": [40.3167, 36.55], "Trabzon": [41.0027, 39.7167], "Tunceli": [39.1083, 39.5471], "Şanlıurfa": [37.1591, 38.7969], "Uşak": [38.6823, 29.4082], "Van": [38.4891, 43.38], "Yozgat": [39.8181, 34.8147], "Zonguldak": [41.4506, 31.7908], "Aksaray": [38.3687, 34.037], "Bayburt": [40.2552, 40.2249], "Karaman": [37.1759, 33.2287], "Kırıkkale": [39.8468, 33.5153], "Batman": [37.8812, 41.1351], "Şırnak": [37.5164, 42.4611], "Bartın": [41.6358, 32.3375], "Ardahan": [41.1105, 42.7022], "Iğdır": [39.9167, 44.0333], "Yalova": [40.6551, 29.2769], "Karabük": [41.2061, 32.6204], "Kilis": [36.7184, 37.1212], "Osmaniye": [37.0742, 36.2473], "Düzce": [40.8438, 31.1565]
+            };
 
-                <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3 text-muted"><i class="bi bi-map me-2"></i>Canlı Rota İzleme</h6>
-                    <div id="kargoHarita"></div>
-
-                    @if (Model.Any())
-                    {
-                        <div class="timeline-container">
-                            @foreach (var hareket in Model.OrderByDescending(x => x.Tarih))
-                            {
-                                string statusClass = hareket.Durum switch
-                                {
-                                    "Kabul Edildi" => "status-hazirlaniyor",
-                                    "Yolda" => "status-yolda",
-                                    "Teslim Edildi" => "status-teslim",
-                                    _ => "status-hata"
-                                };
-
-                                <div class="timeline-item">
-                                    <div class="timeline-dot"></div>
-                                    <div class="timeline-content">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="status-badge @statusClass">@hareket.Durum</span>
-                                            <small class="text-muted">@hareket.Tarih.ToString("HH:mm")</small>
-                                        </div>
-                                        <div class="fw-bold small">@hareket.Tarih.ToString("dd MMMM yyyy, dddd")</div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="main-card p-4">
-                <div class="qr-box mb-4 shadow-sm border-0 bg-white">
-                    <h6 class="fw-bold mb-3 small text-uppercase text-primary">
-                        <i class="bi bi-qr-code-scan me-2"></i>Dijital Takip Barkodu
-                    </h6>
-
-                    @{
-                        var request = ViewContext.HttpContext.Request;
-                        var url = $"{request.Scheme}://{request.Host}{Url.Action("KargoHareketleri", "Hareket", new { id = kargoId })}";
-                    }
-
-                    <div class="qr-container p-2 d-inline-block border rounded-3 bg-white">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=@System.Net.WebUtility.UrlEncode(url)"
-                             alt="Kargo Takip QR"
-                             class="img-fluid rounded"
-                             style="min-width: 160px;" />
-                    </div>
-
-                    <p class="mt-3 small text-muted mb-0">
-                        Bu barkodu okutarak kargo hareketlerine mobil cihazınızdan anlık erişebilirsiniz.
-                    </p>
-                    <div class="mt-2 badge bg-light text-dark border fw-normal">ID: #@kargoId</div>
-                </div>
-
-                <div class="d-grid gap-2">
-                    <a asp-action="YeniHareket" asp-route-id="@kargoId" class="btn btn-primary rounded-pill py-2 fw-bold shadow-sm">
-                        <i class="bi bi-plus-lg me-1"></i> Yeni Hareket Ekle
-                    </a>
-                </div>
-            </div>
-        </div>
-
-<script>
-    var map = L.map('kargoHarita').setView([39.9334, 32.8597], 6);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
-
-    var gondericiSehir = "@Html.Raw(ViewBag.GondericiSehir)";
-     var aliciSehir = "@Html.Raw(ViewBag.AliciSehir)";
-
-     console.log("Düzeltilmiş Şehirler:", gondericiSehir, aliciSehir);
-    async function getCoordinates(city) {
-        if (!city || city === "") return null;
-        try {
-            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&countrycodes=tr&limit=1`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data && data.length > 0) {
-                console.log(city + " bulundu:", data[0].lat, data[0].lon);
-                return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-            }
-        } catch (error) {
-            console.error("API Hatası:", city, error);
-        }
-        return null;
-    }
-
-    async function haritayiCiz() {
-        console.log("Aranan Şehirler:", gondericiSehir, "->", aliciSehir);
-
-        const coords1 = await getCoordinates(gondericiSehir);
-        const coords2 = await getCoordinates(aliciSehir);
-
-        if (coords1 && coords2) {
-            L.marker(coords1).addTo(map).bindPopup('Çıkış: ' + gondericiSehir);
-            L.marker(coords2).addTo(map).bindPopup('Varış: ' + aliciSehir);
-
-            var latlngs = [coords1, coords2];
-            var polyline = L.polyline(latlngs, {
-                color: '#667eea',
-                weight: 5,
-                opacity: 0.6,
-                dashArray: '10, 15'
+            const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([39.0, 35.0], 6);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
             }).addTo(map);
 
-            map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
-        } else {
-            if (!coords1) console.error("Gönderici şehri bulunamadı: " + gondericiSehir);
-            if (!coords2) console.error("Alıcı şehri bulunamadı: " + aliciSehir);
-        }
-    }
+            const gondericiIl = "@Html.Raw(Model.GondericiIl)";
+            const aliciIl = "@Html.Raw(Model.AliciIl)";
+            const currentDurum = "@Html.Raw(Model.Durum)";
 
-    haritayiCiz();
-</script>
+            const start = CITY_COORDS[gondericiIl] || [39.93, 32.85];
+            const end = CITY_COORDS[aliciIl] || [41.01, 28.97];
+
+            const pulseIcon = L.divIcon({
+                className: 'pulse-marker',
+                html: `<div style="width: 16px; height: 16px; background: var(--primary); border: 3px solid #fff; border-radius: 50%;"></div>`,
+                iconSize: [16, 16], iconAnchor: [8, 8]
+            });
+
+            const staticIcon = L.divIcon({
+                className: 'static-marker',
+                html: `<div style="width: 12px; height: 12px; background: #555; border: 2px solid #aaa; border-radius: 50%;"></div>`,
+                iconSize: [12, 12], iconAnchor: [6, 6]
+            });
+
+            L.marker(start, {icon: staticIcon}).addTo(map).bindPopup("<b>Çıkış:</b> " + gondericiIl);
+            L.marker(end, {icon: pulseIcon}).addTo(map).bindPopup("<b>Varış:</b> " + aliciIl);
+
+            let progress = 0;
+            let statusText = "Hazırlanıyor";
+            let isCancelled = false;
+
+            switch(currentDurum) {
+                case "Teslim Edildi": 
+                    progress = 1.0; 
+                    statusText = "Teslim Edildi"; 
+                    break;
+                case "Dağıtımda": 
+                    progress = 0.85; 
+                    statusText = "Dağıtımda"; 
+                    break;
+                case "Yolda": 
+                    progress = 0.5; 
+                    statusText = "Yolda"; 
+                    break;
+                case "Aktarma Merkezinde": 
+                    progress = 0.35; 
+                    statusText = "Aktarma Merkezinde"; 
+                    break;
+                case "İptal Edildi":
+                    progress = 0.0;
+                    statusText = "İptal Edildi";
+                    isCancelled = true;
+                    break;
+                case "Hazırlanıyor":
+                default: 
+                    progress = 0.0;
+                    statusText = "Hazırlanıyor"; 
+                    break;
+            }
+
+            const lat = start[0] + (end[0] - start[0]) * progress;
+            const lng = start[1] + (end[1] - start[1]) * progress;
+
+            let currentCity = gondericiIl;
+            if (progress >= 0.9) {
+                currentCity = aliciIl;
+            } else if (progress >= 0.3 && progress < 0.9) {
+                let minDist = Infinity;
+                for (const [city, coords] of Object.entries(CITY_COORDS)) {
+                    const dist = Math.sqrt(Math.pow(coords[0] - lat, 2) + Math.pow(coords[1] - lng, 2));
+                    if (dist < minDist) {
+                        minDist = dist;
+                        currentCity = city;
+                    }
+                }
+            }
+
+            if (!isCancelled) {
+                const truckIcon = L.divIcon({
+                    className: 'truck-marker',
+                    html: `<div style="width: 36px; height: 36px; background: var(--primary); border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-truck-front-fill" style="color: white; font-size: 18px;"></i></div>`,
+                    iconSize: [36, 36], iconAnchor: [18, 18]
+                });
+
+                L.marker([lat, lng], {icon: truckIcon}).addTo(map)
+                    .bindPopup(`<b>Kurye: Ahmet Y.</b><br>Araç: 34 VR 1923<br>Durum: ${statusText}`).openPopup();
+
+                if (progress > 0) {
+                    L.polyline([start, [lat, lng]], { color: 'var(--primary)', weight: 4 }).addTo(map);
+                }
+                L.polyline([[lat, lng], end], { color: 'rgba(255,255,255,0.2)', weight: 3, dashArray: '5, 10' }).addTo(map);
+            } else {
+                const cancelIcon = L.divIcon({
+                    className: 'cancel-marker',
+                    html: `<div style="width: 36px; height: 36px; background: var(--danger); border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-x-lg" style="color: white; font-size: 18px;"></i></div>`,
+                    iconSize: [36, 36], iconAnchor: [18, 18]
+                });
+                
+                L.marker(start, {icon: cancelIcon}).addTo(map)
+                    .bindPopup(`<b style="color:var(--danger)">İPTAL EDİLDİ</b><br>Gönderim durduruldu.`).openPopup();
+                    
+                L.polyline([start, end], { color: 'rgba(225, 29, 72, 0.3)', weight: 3, dashArray: '5, 10' }).addTo(map);
+            }
+            
+            if (!isCancelled) {
+                const courierHtml = `
+                    <div style="position: absolute; top: 20px; right: 20px; width: 220px; background: rgba(15,15,15,0.9); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; z-index: 1000;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                            <div style="width: 40px; height: 40px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+                                <i class="bi bi-person-fill" style="color: var(--text-secondary);"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.85rem; font-weight: 700;">Ahmet Yılmaz</div>
+                                <div style="font-size: 0.7rem; color: var(--success);">● Çevrimiçi</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 0.5rem; border-radius: 6px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Toyota Proace</span>
+                            <span style="font-size: 0.75rem; font-weight: 700;">34 VR 1923</span>
+                        </div>
+                    </div>
+                `;
+                $('#map').append(courierHtml);
+            }
+
+            map.fitBounds(L.latLngBounds(start, end), { padding: [80, 80] });
+
+            let locationText = currentCity + " Bölgesi";
+            if (currentDurum === "Teslim Edildi") {
+                locationText = aliciIl + " - Teslim Edildi";
+            } else if (currentDurum === "Hazırlanıyor") {
+                locationText = gondericiIl + " - Hazırlanıyor";
+            }
+            
+            $('#current-loc').text(locationText);
+            const dist = (map.distance(start, end) / 1000).toFixed(0);
+            $('#distance-text').text(dist + " km");
+        });
+
+        function showQR() {
+            const trackCode = "@Model.TakipNo"; 
+            const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(trackCode)}&color=e11d48&bgcolor=FFFFFF`; 
+            $('#qrImage').attr('src', qrApi);
+            $('#qrModal').css('display', 'flex').hide().fadeIn();
+        }
+    </script>
+}

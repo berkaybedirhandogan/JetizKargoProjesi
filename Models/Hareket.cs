@@ -15,8 +15,8 @@ namespace KargoTakibi.Models
         public DateTime Tarih { get; set; }
 
         [Required]
-        public string Durum { get; set; }
+        public string? Durum { get; set; }
 
-        public virtual Kargo Kargo { get; set; }
+        public virtual Kargo? Kargo { get; set; }
     }
 }

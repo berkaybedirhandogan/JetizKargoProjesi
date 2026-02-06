@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Yardım Merkezi";
+}
+
+<div class="page-container">
+
+
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h1 style="margin-bottom: 1.5rem; font-size: 2rem;">Nasıl Yardımcı Olabiliriz?</h1>
+        <div class="input-wrap" style="max-width: 500px; margin: 0 auto;">
+            <input type="text" class="form-control" placeholder="Bir sorun veya konu arayın..." style="padding: 1rem 1.25rem; font-size: 1rem; border-radius: var(--radius-lg);" disabled>
+            <i class="bi bi-search" style="right: 1.25rem; font-size: 1.1rem;"></i>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+        <div class="card-glass">
+            <h4 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.05rem;">Kargo Takibi</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-secondary); line-height: 2; font-size: 0.9rem;">
+                <li>Kargom nerede?</li>
+                <li>Takip numarası bulma</li>
+                <li>Tahmini teslimat süresi</li>
+            </ul>
+        </div>
+        <div class="card-glass">
+            <h4 style="color: var(--info); margin-bottom: 1rem; font-size: 1.05rem;">Teslimat Sorunları</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-secondary); line-height: 2; font-size: 0.9rem;">
+                <li>Adres değişikliği yapabilir miyim?</li>
+                <li>Kargom hasarlı geldi</li>
+                <li>Evde yoktum, ne yapmalıyım?</li>
+            </ul>
+        </div>
+        <div class="card-glass">
+            <h4 style="color: var(--success); margin-bottom: 1rem; font-size: 1.05rem;">Hesap ve Ödeme</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-secondary); line-height: 2; font-size: 0.9rem;">
+                <li>Fatura talebi</li>
+                <li>Hesap ayarları</li>
+                <li>Kargo sigortası nasıl çalışır?</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media (max-width: 900px) {
+        .page-container [style*="grid-template-columns: repeat(3"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>

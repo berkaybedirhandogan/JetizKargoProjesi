@@ -1,227 +1,106 @@
 @model IEnumerable<KargoTakibi.Models.Hareket>
 
 @{
-    ViewData["Title"] = "Tüm Kargo Hareketleri";
+    ViewData["Title"] = "Tüm Hareket Geçmişi";
 }
 
-<style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --table-hover-bg: #f8fafc;
-    }
+<div class="form-page-container" style="max-width: 1200px;">
 
-    body {
-        background-color: #f3f4f6;
-    }
 
-    .main-card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        background: white;
-        overflow: hidden;
-        margin-bottom: 3rem;
-    }
 
-    .card-header-custom {
-        background: var(--primary-gradient);
-        padding: 2rem;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .table-custom thead th {
-        background-color: #fff;
-        color: #718096;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border-bottom: 2px solid #e2e8f0;
-        padding: 1rem 1.5rem;
-        font-weight: 700;
-    }
-
-    .table-custom tbody tr {
-        transition: all 0.2s ease;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-        .table-custom tbody tr:hover {
-            background-color: var(--table-hover-bg);
-            transform: scale(1.002);
-        }
-
-    .table-custom td {
-        vertical-align: middle;
-        padding: 1.25rem 1.5rem;
-        color: #4a5568;
-        font-weight: 500;
-    }
-
-    .status-pill {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 14px;
-        border-radius: 30px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-        .status-pill i {
-            margin-right: 8px;
-            font-size: 1rem;
-        }
-
-    .badge-primary {
-        background-color: #e0e7ff;
-        color: #4338ca;
-    }
-    .badge-success {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
-    .badge-warning {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
-    .badge-danger {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-    .location-icon {
-        color: #718096;
-        background: #edf2f7;
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 12px;
-    }
-
-    .btn-detail-link {
-        text-decoration: none;
-        font-weight: 600;
-        padding: 6px 12px;
-        border-radius: 8px;
-        transition: all 0.2s;
-        border: 1px solid #e2e8f0;
-        color: #4a5568;
-    }
-
-        .btn-detail-link:hover {
-            background-color: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-</style>
-
-<div class="container py-5">
-    <div class="main-card">
-        <div class="card-header-custom">
-            <div class="d-flex align-items-center">
-                <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
-                    <i class="bi bi-clock-history fs-3"></i>
-                </div>
-                <div>
-                    <h3 class="mb-1 fw-bold">Tüm Hareket Geçmişi</h3>
-                    <p class="mb-0 opacity-75 small">Sistemdeki kargo süreçlerini buradan takip edebilirsiniz.</p>
-                </div>
-            </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 1.85rem; margin-bottom: 0.25rem;">Hareket Geçmişi</h1>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">Sistemdeki tüm kargo durum güncellemeleri.</p>
         </div>
+        <div style="width: 280px;" class="input-wrap">
+            <input type="text" id="hareketSearch" class="form-control" placeholder="ID veya Durum ara..." style="padding: 0.6rem 2.25rem 0.6rem 1rem; font-size: 0.85rem;" />
+            <i class="bi bi-filter-right" style="right: 1rem;"></i>
+        </div>
+    </div>
 
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-custom mb-0">
-                    <thead>
+    <div class="card-glass" style="padding: 0; overflow: hidden;">
+        <div class="table-container" style="border: none; border-radius: 0;">
+            <table class="table" id="hareketTable">
+                <thead>
+                    <tr>
+                        <th>Hareket No</th>
+                        <th>Kargo No</th>
+                        <th><i class="bi bi-clock"></i> İşlem Tarihi</th>
+                        <th><i class="bi bi-info-square"></i> Güncel Durum</th>
+                        <th style="text-align: right;">Gönderici → Alıcı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderByDescending(h => h.Tarih))
+                    {
                         <tr>
-                            <th width="35%">Kargo / Varış Noktası</th>
-                            <th width="20%">İşlem Tarihi</th>
-                            <th width="25%">Durum</th>
-                            <th width="20%" class="text-end pe-4">Aksiyon</th>
+                            <td style="font-family: monospace; color: var(--text-muted); font-size: 0.85rem;">#H-@item.HareketID.ToString("D4")</td>
+                            <td>
+                                <a asp-controller="Kargo" asp-action="Detay" asp-route-id="@item.KargoID" style="color: var(--primary); font-weight: 700; font-size: 0.9rem;">
+                                    #K-@item.KargoID.ToString("D6")
+                                </a>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600; font-size: 0.85rem;">@item.Tarih.ToString("dd.MM.yyyy HH:mm")</div>
+                            </td>
+                            <td>
+                                @if (item.Durum == "Teslim Edildi")
+                                {
+                                    <span class="badge badge-success" style="font-size: 0.7rem;"><i class="bi bi-check2-circle"></i> @item.Durum</span>
+                                }
+                                else if (item.Durum == "Yolda" || item.Durum == "Dağıtımda")
+                                {
+                                    <span class="badge badge-info" style="font-size: 0.7rem;"><i class="bi bi-truck"></i> @item.Durum</span>
+                                }
+                                else if (item.Durum == "İptal Edildi")
+                                {
+                                    <span class="badge badge-danger" style="font-size: 0.7rem;"><i class="bi bi-slash-circle"></i> @item.Durum</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning" style="font-size: 0.7rem;"><i class="bi bi-box"></i> @item.Durum</span>
+                                }
+                            </td>
+                            <td style="text-align: right; font-size: 0.8rem;">
+                                @if (item.Kargo != null)
+                                {
+                                    <span style="color: var(--text-secondary);">@item.Kargo.GondericiAd</span>
+                                    <i class="bi bi-arrow-right" style="margin: 0 0.35rem; color: var(--primary); font-size: 0.7rem;"></i>
+                                    <span style="color: var(--text-main); font-weight: 600;">@item.Kargo.AliciAd</span>
+                                }
+                                else
+                                {
+                                    <span style="color: var(--text-muted);">Bilinmeyen Gönderi</span>
+                                }
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var hareket in Model)
-                        {
-                            string badgeClass = "badge-primary";
-                            string iconClass = "bi-truck";
-
-                            if (!string.IsNullOrEmpty(hareket.Durum))
-                            {
-                                var d = hareket.Durum.ToLower();
-
-                                if (d.Contains("teslim edildi") || d.Contains("tamam"))
-                                {
-                                    badgeClass = "badge-success";
-                                    iconClass = "bi-check-circle-fill";
-                                }
-                                else if (d.Contains("kabul") || d.Contains("hazır") || d.Contains("işlem"))
-                                {
-                                    badgeClass = "badge-warning";
-                                    iconClass = "bi-box-seam";
-                                }
-                                else if (d.Contains("edilemedi") || d.Contains("iptal") || d.Contains("sorun") || d.Contains("başarısız"))
-                                {
-                                    badgeClass = "badge-danger";
-                                    iconClass = "bi-exclamation-triangle-fill";
-                                }
-                                else if (d.Contains("yolda") || d.Contains("sevk"))
-                                {
-                                    badgeClass = "badge-primary";
-                                    iconClass = "bi-truck";
-                                }
-                            }
-
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="location-icon shadow-sm">
-                                            <i class="bi bi-geo-alt-fill"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold text-dark">
-                                                @(string.IsNullOrEmpty(hareket.Kargo?.AliciAdresi) ? "Adres Yok" : (hareket.Kargo.AliciAdresi.Length > 35 ? hareket.Kargo.AliciAdresi.Substring(0, 35) + "..." : hareket.Kargo.AliciAdresi))
-                                            </div>
-                                            <small class="text-muted">ID: #@hareket.KargoID</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex flex-column">
-                                        <span class="fw-bold text-dark">@hareket.Tarih.ToString("dd.MM.yyyy")</span>
-                                        <span class="small text-muted">@hareket.Tarih.ToString("HH:mm")</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="status-pill @badgeClass shadow-sm">
-                                        <i class="bi @iconClass"></i> @hareket.Durum
-                                    </span>
-                                </td>
-                                <td class="text-end pe-4">
-                                    <a asp-controller="Kargo" asp-action="Detay" asp-route-id="@hareket.KargoID" class="btn-detail-link shadow-sm">
-                                        Kargoya Git <i class="bi bi-arrow-right ms-1"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            @if (!Model.Any())
-            {
-                <div class="text-center py-5">
-                    <div class="mb-3 text-muted opacity-25">
-                        <i class="bi bi-clipboard-x" style="font-size: 5rem;"></i>
-                    </div>
-                    <h5 class="text-muted fw-bold">Henüz hareket kaydı yok.</h5>
-                    <p class="text-muted">İşlem yapıldığında hareketler burada görünecektir.</p>
-                </div>
-            }
+                    }
+                    
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" style="padding: 3rem; text-align: center;">
+                                <i class="bi bi-clock-history" style="font-size: 2.5rem; color: var(--border); display: block; margin-bottom: 1rem;"></i>
+                                <div style="color: var(--text-secondary); font-weight: 600;">Hareket kaydı bulunamadı.</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $("#hareketSearch").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#hareketTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}

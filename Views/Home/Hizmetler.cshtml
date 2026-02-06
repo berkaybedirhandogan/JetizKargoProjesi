@@ -1,0 +1,58 @@
+@{
+    ViewData["Title"] = "Hizmetlerimiz";
+}
+
+<div class="page-container">
+
+
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 2.25rem; margin-bottom: 0.75rem;">Hizmetlerimiz</h1>
+        <p style="font-size: 1rem; color: var(--text-secondary); max-width: 550px; margin: 0 auto;">
+            İhtiyacınıza uygun, hızlı ve güvenli lojistik çözümleri sunuyoruz.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+        <div class="card-glass" style="border-top: 3px solid var(--primary);">
+            <div style="font-size: 2rem; color: var(--primary); margin-bottom: 1.25rem;"><i class="bi bi-box-seam"></i></div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem;">Standart Kargo</h3>
+            <p style="margin-bottom: 1.25rem; color: var(--text-secondary); font-size: 0.9rem;">Türkiye'nin her yerine 1-3 iş günü içinde ekonomik ve güvenli teslimat.</p>
+            <ul style="text-align: left; color: var(--text-secondary); font-size: 0.85rem; list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 0.4rem;"><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> Canlı Takip</li>
+                <li style="margin-bottom: 0.4rem;"><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> SMS Bildirimi</li>
+                <li><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> Sigorta Opsiyonu</li>
+            </ul>
+        </div>
+        
+        <div class="card-glass" style="border-top: 3px solid var(--info); position: relative;">
+             <div class="badge badge-info" style="position: absolute; top: 1rem; right: 1rem; font-size: 0.65rem;">POPÜLER</div>
+            <div style="font-size: 2rem; color: var(--info); margin-bottom: 1.25rem;"><i class="bi bi-lightning-charge"></i></div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem;">Jetiz Express</h3>
+            <p style="margin-bottom: 1.25rem; color: var(--text-secondary); font-size: 0.9rem;">Aynı gün içinde teslimat. Büyükşehirlerde 24 saat kesintisiz hizmet.</p>
+             <ul style="text-align: left; color: var(--text-secondary); font-size: 0.85rem; list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 0.4rem;"><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> Öncelikli Teslimat</li>
+                <li style="margin-bottom: 0.4rem;"><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> VIP Kurye</li>
+                <li><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> %100 Zaman Garantisi</li>
+            </ul>
+        </div>
+
+        <div class="card-glass" style="border-top: 3px solid var(--warning);">
+            <div style="font-size: 2rem; color: var(--warning); margin-bottom: 1.25rem;"><i class="bi bi-globe"></i></div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem;">Uluslararası</h3>
+            <p style="margin-bottom: 1.25rem; color: var(--text-secondary); font-size: 0.9rem;">200+ ülkeye hava ve karayolu ile hızlı ihracat ve ithalat çözümleri.</p>
+             <ul style="text-align: left; color: var(--text-secondary); font-size: 0.85rem; list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 0.4rem;"><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> Gümrük Danışmanlığı</li>
+                <li style="margin-bottom: 0.4rem;"><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> Kapıdan Kapıya</li>
+                <li><i class="bi bi-check-lg" style="color: var(--success); margin-right: 5px;"></i> Global Takip</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media (max-width: 900px) {
+        .page-container [style*="grid-template-columns: repeat(3"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>

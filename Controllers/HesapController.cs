@@ -18,7 +18,7 @@ namespace KargoTakibi.Controllers
 
         public IActionResult Giris()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -39,8 +39,8 @@ namespace KargoTakibi.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, kullanici.AdSoyad),
-                new Claim(ClaimTypes.Email, kullanici.Email),
+                new Claim(ClaimTypes.Name, kullanici.AdSoyad ?? ""),
+                new Claim(ClaimTypes.Email, kullanici.Email ?? ""),
                 new Claim("KullaniciID", kullanici.KullaniciID.ToString())
             };
 
@@ -54,7 +54,7 @@ namespace KargoTakibi.Controllers
 
         public IActionResult Kayit()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -87,6 +87,69 @@ namespace KargoTakibi.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> Profil()
+        {
+            var kullaniciIdClaim = User.Claims.FirstOrDefault(c => c.Type == "KullaniciID");
+            if (kullaniciIdClaim == null) return RedirectToAction("Giris");
+
+            int id = int.Parse(kullaniciIdClaim.Value);
+            var kullanici = await _context.Kullanicilar.FindAsync(id);
+            if (kullanici == null) return NotFound();
+
+            return View(kullanici);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Profil(Kullanici model)
+        {
+            var kullaniciIdClaim = User.Claims.FirstOrDefault(c => c.Type == "KullaniciID");
+            if (kullaniciIdClaim == null) return RedirectToAction("Giris");
+            
+            int id = int.Parse(kullaniciIdClaim.Value);
+            var user = await _context.Kullanicilar.FindAsync(id);
+
+            if (user == null) return NotFound();
+
+            user.AdSoyad = model.AdSoyad;
+            user.Email = model.Email;
+
+            if (!string.IsNullOrEmpty(model.Sifre))
+            {
+                var passwordRegex = new System.Text.RegularExpressions.Regex(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&.])");
+                if (model.Sifre.Length < 8 || !passwordRegex.IsMatch(model.Sifre))
+                {
+                    ModelState.AddModelError("Sifre", "Yeni şifre en az 8 karakter olmalı; harf, rakam ve özel karakter (@$!%*?&.) içermelidir.");
+                    return View(user);
+                }
+                user.Sifre = model.Sifre;
+            }
+
+            try {
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+                
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.AdSoyad ?? ""),
+                    new Claim(ClaimTypes.Email, user.Email ?? ""),
+                    new Claim("KullaniciID", user.KullaniciID.ToString())
+                };
+
+                var kimlik = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(kimlik);
+                
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                ViewBag.Message = "Profil bilgileriniz başarıyla güncellenmiştir.";
+            }
+            catch(Exception ex) {
+                ModelState.AddModelError("", "Güncelleme sırasında bir hata oluştu: " + ex.Message);
+            }
+
+            return View(user);
         }
     }
 }

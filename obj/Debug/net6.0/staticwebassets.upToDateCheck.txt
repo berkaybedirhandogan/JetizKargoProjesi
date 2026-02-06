@@ -1,6 +1,9 @@
+wwwroot\css\animations.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
+wwwroot\img\logo.ico
 wwwroot\js\site.js
+wwwroot\js\turkey_data.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css

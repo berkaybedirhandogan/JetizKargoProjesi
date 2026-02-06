@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Fiyatlar";
+}
+
+<div class="page-container">
+
+
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 2.25rem; margin-bottom: 0.75rem;">Şeffaf Fiyatlandırma</h1>
+        <p style="font-size: 1rem; color: var(--text-secondary);">Sürpriz ek ücretler yok. İhtiyacınıza uygun paketi seçin.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+        <div class="card-glass text-center" style="padding: 2rem 1.5rem;">
+            <h3 style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 1.1rem;">Standart</h3>
+            <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 1.5rem;">
+                ₺59<span style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 500;">/başlangıç</span>
+            </div>
+            <ul style="list-style: none; padding: 0; margin-bottom: 1.5rem; color: var(--text-secondary); line-height: 2; font-size: 0.9rem;">
+                <li>0-2 kg Gönderiler</li>
+                <li>3 İş Gününde Teslimat</li>
+                <li>Standart Sigorta</li>
+                <li>Online Takip</li>
+            </ul>
+            <span class="btn btn-outline w-100" style="pointer-events: none; opacity: 0.6;">Planı Seç</span>
+        </div>
+
+        <div class="card-glass text-center" style="padding: 2rem 1.5rem; border: 2px solid var(--primary); background: linear-gradient(180deg, rgba(225,29,72,0.1) 0%, rgba(0,0,0,0) 100%);">
+            <div class="badge badge-danger mb-3">EN ÇOK TERCİH EDİLEN</div>
+            <h3 style="color: white; margin-bottom: 1rem; font-size: 1.1rem;">Express</h3>
+            <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 1.5rem; color: var(--primary);">
+                ₺120<span style="font-size: 0.9rem; font-weight: 500; color: white;">/başlangıç</span>
+            </div>
+            <ul style="list-style: none; padding: 0; margin-bottom: 1.5rem; color: white; line-height: 2; font-size: 0.9rem;">
+                 <li>0-5 kg Gönderiler</li>
+                <li><strong>24 Saatte Teslimat</strong></li>
+                <li>Tam Kapsamlı Sigorta</li>
+                <li>Öncelikli Müşteri Desteği</li>
+            </ul>
+            <span class="btn btn-primary w-100" style="pointer-events: none; opacity: 0.6;">Planı Seç</span>
+        </div>
+
+         <div class="card-glass text-center" style="padding: 2rem 1.5rem;">
+            <h3 style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 1.1rem;">Kurumsal</h3>
+            <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 1.5rem;">
+                Özel<span style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 500;">/teklif</span>
+            </div>
+            <ul style="list-style: none; padding: 0; margin-bottom: 1.5rem; color: var(--text-secondary); line-height: 2; font-size: 0.9rem;">
+                <li>Sınırsız Kilogram</li>
+                <li>Size Özel Kurye Ataması</li>
+                <li>API Entegrasyonu</li>
+                <li>Aylık Faturalandırma</li>
+            </ul>
+            <span class="btn btn-outline w-100" style="pointer-events: none; opacity: 0.6;">Teklif İste</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media (max-width: 900px) {
+        .page-container [style*="grid-template-columns: repeat(3"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>

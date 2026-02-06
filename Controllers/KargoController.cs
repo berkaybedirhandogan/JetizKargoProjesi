@@ -17,7 +17,7 @@ namespace KargoTakibi.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var kullaniciId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID").Value);
+            var kullaniciId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID")?.Value ?? "0");
             var kargolar = await _context.Kargolar
                 .Include(k => k.Hareketler)
                 .Where(k => k.KullaniciID == kullaniciId)
@@ -29,20 +29,14 @@ namespace KargoTakibi.Controllers
 
         public async Task<IActionResult> Detay(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var kullaniciId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID").Value);
+            var kullaniciId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID")?.Value ?? "0");
             var kargo = await _context.Kargolar
                 .Include(k => k.Hareketler)
                 .FirstOrDefaultAsync(k => k.KargoID == id && k.KullaniciID == kullaniciId);
 
-            if (kargo == null)
-            {
-                return NotFound();
-            }
+            if (kargo == null) return NotFound();
 
             return View(kargo);
         }
@@ -58,40 +52,37 @@ namespace KargoTakibi.Controllers
         {
             if (ModelState.IsValid)
             {
-                kargo.KullaniciID = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID").Value);
+                kargo.KullaniciID = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID")?.Value ?? "0");
                 kargo.Durum = "Kabul Edildi";
+                kargo.TakipNo = "JTZ-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
                 
-                _context.Add(kargo);
+                _context.Kargolar.Add(kargo);
+                await _context.SaveChangesAsync();
                 
                 var hareket = new Hareket
                 {
-                    Kargo = kargo,
+                    KargoID = kargo.KargoID,
                     Tarih = DateTime.Now,
                     Durum = "Kabul Edildi"
                 };
-                _context.Hareketler.Add(hareket);
                 
+                _context.Hareketler.Add(hareket);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                
+                return RedirectToAction("Detay", new { id = kargo.KargoID });
             }
             return View(kargo);
         }
 
         public async Task<IActionResult> Duzenle(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var kullaniciId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID").Value);
+            var kullaniciId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID")?.Value ?? "0");
             var kargo = await _context.Kargolar
                 .FirstOrDefaultAsync(k => k.KargoID == id && k.KullaniciID == kullaniciId);
 
-            if (kargo == null)
-            {
-                return NotFound();
-            }
+            if (kargo == null) return NotFound();
 
             return View(kargo);
         }
@@ -100,16 +91,10 @@ namespace KargoTakibi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Duzenle(int id, Kargo kargo)
         {
-            if (id != kargo.KargoID)
-            {
-                return NotFound();
-            }
+            if (id != kargo.KargoID) return NotFound();
 
-            var kullaniciId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID").Value);
-            if (kargo.KullaniciID != kullaniciId)
-            {
-                return Unauthorized();
-            }
+            var kullaniciId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "KullaniciID")?.Value ?? "0");
+            if (kargo.KullaniciID != kullaniciId) return Unauthorized();
 
             if (ModelState.IsValid)
             {
@@ -120,14 +105,8 @@ namespace KargoTakibi.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!KargoExists(kargo.KargoID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!KargoExists(kargo.KargoID)) return NotFound();
+                    throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -138,6 +117,7 @@ namespace KargoTakibi.Controllers
         {
             return _context.Kargolar.Any(e => e.KargoID == id);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Sil(int id)
@@ -151,10 +131,7 @@ namespace KargoTakibi.Controllers
                 .Include(k => k.Hareketler)
                 .FirstOrDefaultAsync(k => k.KargoID == id && k.KullaniciID == kullaniciId);
 
-            if (kargo == null)
-            {
-                return NotFound();
-            }
+            if (kargo == null) return NotFound();
 
             try
             {
@@ -164,7 +141,6 @@ namespace KargoTakibi.Controllers
                 }
 
                 _context.Kargolar.Remove(kargo);
-
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
