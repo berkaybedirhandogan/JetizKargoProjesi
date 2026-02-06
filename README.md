@@ -299,12 +299,12 @@ Kargonun tarihsel gelişimini değiştirmek için kullanılır. "Kargo Hareketle
 ## Tanıtım Videosu
 
 YouTube üzerinden projenin canlı kullanımını izlemek için:
-[Jetiz Kargo Tanıtım Videosu - İzle](https://www.youtube.com/watch?v=example)
+[Jetiz Kargo Tanıtım Videosu - İzle](https://youtu.be/98RoNk6NPn0)
 
 ## Geliştirici Hakkında
 
-**Berkay Bedirhan Doğan**
-Full-stack Geliştirici & UI/UX Meraklısı
+**Berkay Bedirhan Doğan 132130029**
+
 *Bu proje, modern web teknolojilerinin lojistik sektöründeki verimliliğini kanıtlamak amacıyla geliştirilmiş bir portfolyo çalışmasıdır.*
 
 ## Lisans
